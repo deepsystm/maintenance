@@ -9,9 +9,10 @@ namespace :maintenance do
 
       default_template = File.join(File.expand_path('../../templates', __FILE__), 'maintenance.html.erb')
       template = fetch(:maintenance_template_path, default_template)
+      rails_path = fetch(:maintenance_rails_path, "/public/system/")
       result = ERB.new(File.read(template)).result(binding)
 
-      rendered_path = "#{shared_path}/public/system/"
+      rendered_path = "#{shared_path}#{rails_path}"
       rendered_name = "#{fetch(:maintenance_basename, 'maintenance')}.html"
 
       if test "[ ! -d #{rendered_path} ]"
@@ -27,7 +28,8 @@ namespace :maintenance do
   desc "Turn off maintenance mode"
   task :disable do
     on roles(:web) do
-      execute "rm -f #{shared_path}/public/system/#{fetch(:maintenance_basename, 'maintenance')}.html"
+      rails_path = fetch(:maintenance_rails_path, "/public/system/")
+      execute "rm -f #{shared_path}#{rails_path}#{fetch(:maintenance_basename, 'maintenance')}.html"
     end
   end
 end
